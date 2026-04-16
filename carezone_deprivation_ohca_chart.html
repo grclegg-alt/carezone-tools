@@ -3,673 +3,241 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Deprivation & OHCA Risk — Scottish Council Areas | CARe Zone</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Deprivation & OHCA Risk | CARe Zone</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --ink: #1a1a2e;
-    --ink-mid: #3d3d5c;
-    --ink-muted: #7a7a9a;
-    --ink-faint: #b8b8d0;
-    --paper: #f7f5f0;
-    --paper-warm: #edeae3;
-    --accent: #c0392b;
-    --accent-soft: rgba(192,57,43,0.12);
-    --blue-dark: #0d3b6e;
-    --blue-mid: #1a6fb5;
-    --blue-light: #d4eaf7;
-    --green-dark: #1e5631;
-    --green-mid: #2e8b57;
-    --green-light: #d4edd9;
-    --purple-dark: #4a235a;
-    --purple-mid: #7d3c98;
-    --purple-light: #e8d5f0;
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#f0ede8;font-family:'DM Sans',sans-serif;font-size:13px;color:#1a1a2e}
+.app{display:flex;flex-direction:column;height:100vh;padding:8px;gap:6px}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:white;border:1px solid rgba(26,26,46,.1);border-radius:6px;padding:6px 12px;flex-shrink:0}
+.tb-title{font-size:13px;font-weight:500;color:#1a1a2e;white-space:nowrap}
+.sep{width:1px;height:18px;background:rgba(26,26,46,.12);flex-shrink:0}
+.tb-label{font-size:11px;color:#7a7a9a;white-space:nowrap}
+.pills{display:flex;gap:3px}
+.pill{font-size:11px;padding:3px 10px;border-radius:999px;border:1px solid rgba(26,26,46,.15);background:transparent;color:#3d3d5c;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .12s}
+.pill.ac-cpr{background:#0d3b6e;color:white;border-color:#0d3b6e}
+.pill.ac-pad{background:#1e5631;color:white;border-color:#1e5631}
+.pill.ac-rt{background:#4a235a;color:white;border-color:#4a235a}
+select{font-size:11px;padding:3px 7px;border:1px solid rgba(26,26,46,.15);border-radius:4px;background:white;color:#1a1a2e;font-family:'DM Sans',sans-serif;cursor:pointer}
 
-  body {
-    background: var(--paper);
-    color: var(--ink);
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 300;
-    min-height: 100vh;
-    padding: 0;
-  }
+.stats{display:flex;gap:5px;flex-shrink:0}
+.st{background:white;border:1px solid rgba(26,26,46,.1);border-radius:5px;padding:4px 10px;display:flex;align-items:baseline;gap:6px;white-space:nowrap}
+.st-n{font-size:15px;font-weight:600;line-height:1}
+.st-d{font-size:10px;color:#7a7a9a}
 
-  /* Header */
-  .header {
-    background: var(--ink);
-    padding: 2.5rem 3rem 2rem;
-    position: relative;
-    overflow: hidden;
-  }
-  .header::before {
-    content: '';
-    position: absolute;
-    top: -60px; right: -60px;
-    width: 220px; height: 220px;
-    border-radius: 50%;
-    background: rgba(192,57,43,0.12);
-  }
-  .header::after {
-    content: '';
-    position: absolute;
-    bottom: -40px; left: 30%;
-    width: 140px; height: 140px;
-    border-radius: 50%;
-    background: rgba(26,111,181,0.1);
-  }
-  .header-inner { position: relative; z-index: 1; max-width: 900px; }
-  .header-eyebrow {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 0.75rem;
-  }
-  .header-title {
-    font-family: 'Fraunces', serif;
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
-    font-weight: 300;
-    color: #f7f5f0;
-    line-height: 1.15;
-    margin-bottom: 0.75rem;
-    letter-spacing: -0.02em;
-  }
-  .header-title em {
-    font-style: italic;
-    color: rgba(247,245,240,0.65);
-  }
-  .header-sub {
-    font-size: 13px;
-    color: rgba(247,245,240,0.55);
-    line-height: 1.6;
-    max-width: 560px;
-    font-weight: 300;
-  }
+.chart-card{background:white;border:1px solid rgba(26,26,46,.1);border-radius:6px;flex:1;position:relative;min-height:0;overflow:hidden}
+canvas{position:absolute;top:0;left:0}
 
-  /* Summary stats row */
-  .stats-row {
-    display: flex;
-    gap: 0;
-    background: var(--paper-warm);
-    border-bottom: 1px solid rgba(26,26,46,0.1);
-  }
-  .stat-item {
-    flex: 1;
-    padding: 1.25rem 2rem;
-    border-right: 1px solid rgba(26,26,46,0.08);
-  }
-  .stat-item:last-child { border-right: none; }
-  .stat-num {
-    font-family: 'Fraunces', serif;
-    font-size: 2rem;
-    font-weight: 600;
-    color: var(--ink);
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .stat-num.danger { color: var(--accent); }
-  .stat-desc {
-    font-size: 11px;
-    color: var(--ink-muted);
-    line-height: 1.4;
-    font-weight: 400;
-  }
+.tt{position:absolute;background:#1a1a2e;color:#f7f5f0;border-radius:6px;padding:10px 13px;font-size:11px;pointer-events:none;display:none;z-index:20;min-width:175px}
+.tt-name{font-size:13px;font-weight:500;margin-bottom:6px}
+.tt-row{display:flex;justify-content:space-between;gap:12px;color:rgba(247,245,240,.6);margin-bottom:3px}
+.tt-val{font-weight:500;color:rgba(247,245,240,.9)}
+.tt-warn{margin-top:6px;padding-top:5px;border-top:1px solid rgba(247,245,240,.15);font-size:10px;color:#f4a09a;font-weight:500}
 
-  /* Main content */
-  .main { max-width: 960px; margin: 0 auto; padding: 2rem 2rem 3rem; }
-
-  /* Controls bar */
-  .controls-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    padding: 0.75rem 1rem;
-    background: white;
-    border: 1px solid rgba(26,26,46,0.1);
-    border-radius: 6px;
-  }
-  .ctrl-group { display: flex; align-items: center; gap: 8px; }
-  .ctrl-label {
-    font-size: 11px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-muted);
-    white-space: nowrap;
-  }
-  .pills { display: flex; gap: 4px; }
-  .pill {
-    font-size: 11px;
-    font-weight: 400;
-    padding: 4px 12px;
-    border-radius: 999px;
-    border: 1px solid rgba(26,26,46,0.15);
-    background: transparent;
-    color: var(--ink-mid);
-    cursor: pointer;
-    transition: all 0.15s;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .pill:hover { border-color: var(--ink-mid); }
-  .pill.active-cpr { background: var(--blue-dark); color: white; border-color: var(--blue-dark); }
-  .pill.active-pad { background: var(--green-dark); color: white; border-color: var(--green-dark); }
-  .pill.active-rt  { background: var(--purple-dark); color: white; border-color: var(--purple-dark); }
-  .divider { width: 1px; background: rgba(26,26,46,0.1); height: 20px; margin: 0 4px; }
-  select {
-    font-size: 11px;
-    padding: 4px 8px;
-    border: 1px solid rgba(26,26,46,0.15);
-    border-radius: 4px;
-    background: white;
-    color: var(--ink);
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  /* Chart area */
-  .chart-container {
-    background: white;
-    border: 1px solid rgba(26,26,46,0.1);
-    border-radius: 6px;
-    padding: 1.25rem 1rem 0.75rem;
-    position: relative;
-    margin-bottom: 1rem;
-  }
-  .chart-wrap { position: relative; width: 100%; height: 460px; }
-  canvas { position: absolute; top: 0; left: 0; }
-
-  /* Tooltip */
-  .tooltip {
-    position: absolute;
-    background: var(--ink);
-    color: #f7f5f0;
-    border-radius: 6px;
-    padding: 12px 16px;
-    font-size: 12px;
-    pointer-events: none;
-    display: none;
-    z-index: 10;
-    min-width: 190px;
-    max-width: 220px;
-  }
-  .tt-name {
-    font-family: 'Fraunces', serif;
-    font-size: 14px;
-    font-weight: 400;
-    margin-bottom: 8px;
-    color: white;
-    line-height: 1.2;
-  }
-  .tt-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 4px;
-    color: rgba(247,245,240,0.6);
-    font-size: 11px;
-  }
-  .tt-val { font-weight: 500; color: rgba(247,245,240,0.95); }
-  .tt-alert {
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid rgba(247,245,240,0.15);
-    font-size: 11px;
-    color: #f4a09a;
-    font-weight: 500;
-  }
-
-  /* Legend */
-  .legend-area {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: center;
-    padding: 0.75rem 0 0;
-  }
-  .legend-label {
-    font-size: 11px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-muted);
-    margin-right: 4px;
-  }
-  .leg-items { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-  .leg-swatch { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--ink-mid); }
-  .leg-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
-  .legend-sep { width: 1px; height: 14px; background: rgba(26,26,46,0.12); }
-  .size-legend { display: flex; gap: 10px; align-items: center; }
-  .size-eg { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--ink-mid); }
-
-  /* Insight panel */
-  .insights {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-top: 1.25rem;
-  }
-  .insight-card {
-    background: white;
-    border: 1px solid rgba(26,26,46,0.1);
-    border-radius: 6px;
-    padding: 1.25rem 1.5rem;
-  }
-  .insight-card.danger { border-left: 3px solid var(--accent); }
-  .insight-card.info   { border-left: 3px solid var(--blue-mid); }
-  .insight-eyebrow {
-    font-size: 10px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--ink-muted);
-    margin-bottom: 0.5rem;
-  }
-  .insight-title {
-    font-family: 'Fraunces', serif;
-    font-size: 1rem;
-    font-weight: 400;
-    color: var(--ink);
-    margin-bottom: 0.5rem;
-    line-height: 1.3;
-  }
-  .insight-body {
-    font-size: 12px;
-    color: var(--ink-mid);
-    line-height: 1.6;
-    font-weight: 300;
-  }
-  .council-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
-  .tag {
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 999px;
-    border: 1px solid rgba(192,57,43,0.3);
-    color: var(--accent);
-    font-weight: 400;
-  }
-  .tag.blue {
-    border-color: rgba(26,111,181,0.3);
-    color: var(--blue-mid);
-  }
-
-  /* Footer */
-  .footer {
-    border-top: 1px solid rgba(26,26,46,0.08);
-    padding: 1.5rem 2rem;
-    max-width: 960px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  .footer-note { font-size: 10px; color: var(--ink-faint); line-height: 1.6; max-width: 520px; }
-  .footer-brand {
-    font-family: 'Fraunces', serif;
-    font-size: 11px;
-    color: var(--ink-faint);
-    font-style: italic;
-    text-align: right;
-    line-height: 1.5;
-  }
-
-  @media (max-width: 640px) {
-    .header { padding: 1.5rem; }
-    .stats-row { flex-direction: column; }
-    .stat-item { border-right: none; border-bottom: 1px solid rgba(26,26,46,0.08); padding: 1rem 1.5rem; }
-    .main { padding: 1.25rem 1rem 2rem; }
-    .insights { grid-template-columns: 1fr; }
-    .footer { flex-direction: column; }
-    .footer-brand { text-align: left; }
-    .controls-bar { gap: 0.75rem; }
-  }
+.legend{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:white;border:1px solid rgba(26,26,46,.1);border-radius:6px;padding:5px 12px;flex-shrink:0}
+.leg{display:flex;align-items:center;gap:4px;font-size:10px;color:#3d3d5c}
+.leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.note{font-size:10px;color:#b7650a;margin-left:auto}
 </style>
 </head>
 <body>
-
-<div class="header">
-  <div class="header-inner">
-    <div class="header-eyebrow">CARe Zone — Cardiac Arrest Rescue</div>
-    <h1 class="header-title">Deprivation &amp; OHCA Risk<br><em>across Scottish Council Areas</em></h1>
-    <p class="header-sub">Out-of-hospital cardiac arrest rates plotted against deprivation for all 32 Scottish councils. Councils in the upper-right quadrant face the highest combination of social disadvantage and cardiac arrest risk.</p>
-  </div>
-</div>
-
-<div class="stats-row">
-  <div class="stat-item">
-    <div class="stat-num">32</div>
-    <div class="stat-desc">Scottish council<br>areas shown</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">278–631</div>
-    <div class="stat-desc">OHCA range per<br>100,000 population</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">2–39%</div>
-    <div class="stat-desc">Population in most<br>deprived 20% (SIMD)</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num danger">7</div>
-    <div class="stat-desc">Councils in high-risk,<br>high-deprivation zone</div>
-  </div>
-</div>
-
-<div class="main">
-
-  <div class="controls-bar">
-    <div class="ctrl-group">
-      <span class="ctrl-label">Colour by</span>
-      <div class="pills">
-        <button class="pill active-cpr" id="pill-cpr" onclick="setColor('cpr')">Bystander CPR rate</button>
-        <button class="pill" id="pill-pad" onclick="setColor('pad')">PAD use rate</button>
-        <button class="pill" id="pill-rt"  onclick="setColor('rt')">Response time</button>
-      </div>
+<div class="app">
+  <div class="toolbar">
+    <span class="tb-title">Deprivation &amp; OHCA Risk — 32 Scottish Councils</span>
+    <div class="sep"></div>
+    <span class="tb-label">Colour by</span>
+    <div class="pills">
+      <button class="pill ac-cpr" id="p-cpr" onclick="setColor('cpr')">Bystander CPR</button>
+      <button class="pill" id="p-pad" onclick="setColor('pad')">PAD use</button>
+      <button class="pill" id="p-rt" onclick="setColor('rt')">Response time</button>
     </div>
-    <div class="divider"></div>
-    <div class="ctrl-group">
-      <span class="ctrl-label">Highlight</span>
-      <select onchange="setHighlight(this.value)">
-        <option value="">All councils</option>
-        <option value="Inverclyde">Inverclyde</option>
-        <option value="West Dunbartonshire">West Dunbartonshire</option>
-        <option value="Glasgow City">Glasgow City</option>
-        <option value="Dundee City">Dundee City</option>
-        <option value="Dumfries And Galloway">Dumfries And Galloway</option>
-        <option value="North Ayrshire">North Ayrshire</option>
-        <option value="East Ayrshire">East Ayrshire</option>
-        <option value="North Lanarkshire">North Lanarkshire</option>
-        <option value="City Of Edinburgh">City Of Edinburgh</option>
-        <option value="Highland">Highland</option>
-        <option value="Aberdeen City">Aberdeen City</option>
-        <option value="Clackmannanshire">Clackmannanshire</option>
-      </select>
-    </div>
+    <div class="sep"></div>
+    <span class="tb-label">Highlight</span>
+    <select onchange="setHL(this.value)">
+      <option value="">All councils</option>
+      <option>Inverclyde</option><option>West Dunbartonshire</option><option>Glasgow City</option>
+      <option>Dundee City</option><option>Dumfries And Galloway</option><option>North Ayrshire</option>
+      <option>East Ayrshire</option><option>North Lanarkshire</option><option>City Of Edinburgh</option>
+      <option>Highland</option><option>Aberdeen City</option><option>Clackmannanshire</option>
+    </select>
   </div>
 
-  <div class="chart-container">
-    <div class="chart-wrap" id="chartWrap">
-      <canvas id="bgCanvas"></canvas>
-      <canvas id="bubbleCanvas"></canvas>
-      <div class="tooltip" id="tooltip"></div>
-    </div>
-    <div class="legend-area" id="legendArea"></div>
+  <div class="stats">
+    <div class="st"><span class="st-n" style="color:#0d3b6e">32</span><span class="st-d">councils</span></div>
+    <div class="st"><span class="st-n">278–631</span><span class="st-d">OHCA per 100k</span></div>
+    <div class="st"><span class="st-n">2–39%</span><span class="st-d">Deprivation range</span></div>
+    <div class="st"><span class="st-n" style="color:#c0392b">7</span><span class="st-d">high-risk &amp; deprived</span></div>
   </div>
 
-  <div class="insights">
-    <div class="insight-card danger">
-      <div class="insight-eyebrow">Priority action zone</div>
-      <div class="insight-title">High deprivation, high OHCA burden</div>
-      <div class="insight-body">These councils sit in the upper-right quadrant — combining the greatest social disadvantage with the highest cardiac arrest rates. All five CARe Zone levers are most urgently needed here.</div>
-      <div class="council-tags">
-        <span class="tag">Inverclyde</span>
-        <span class="tag">West Dunbartonshire</span>
-        <span class="tag">Dundee City</span>
-        <span class="tag">East Ayrshire</span>
-        <span class="tag">North Ayrshire</span>
-        <span class="tag">Clackmannanshire</span>
-        <span class="tag">North Lanarkshire</span>
-      </div>
-    </div>
-    <div class="insight-card info">
-      <div class="insight-eyebrow">What the data shows</div>
-      <div class="insight-title">Deprivation doubles OHCA risk</div>
-      <div class="insight-body">The most deprived councils experience OHCA rates more than twice those of the least deprived. Bubble size reflects population — larger councils (Glasgow, Edinburgh) may appear moderate despite high absolute numbers.</div>
-      <div class="council-tags">
-        <span class="tag blue">Bubble size = population</span>
-        <span class="tag blue">Colour = CPR / PAD / response</span>
-        <span class="tag blue">Hover for full data</span>
-      </div>
-    </div>
+  <div class="chart-card" id="chartCard">
+    <canvas id="bgC"></canvas>
+    <canvas id="bubC"></canvas>
+    <div class="tt" id="tt"></div>
   </div>
 
-</div>
-
-<div class="footer">
-  <div class="footer-note">
-    OHCA data: Scottish Ambulance Service — Council Data Cut. Population: National Records of Scotland (latest estimates). Deprivation: Scottish Index of Multiple Deprivation (SIMD 2020) — % of population residing in nationally most-deprived 20% of data zones. Bystander CPR and PAD use rates calculated from intermediate zone data aggregated to council level.
-  </div>
-  <div class="footer-brand">
-    CARe Zone<br>Cardiac Arrest Rescue Zones
+  <div class="legend" id="leg">
+    <span class="note">Source: SAS data · SIMD 2020 · Bubble size = population</span>
   </div>
 </div>
 
 <script>
-const data = [
-  {la:"Inverclyde",simd:37.8,ohca:631.1,pop:77800,cpr:66.4,pad:6.9,rt:9.0,arrests:491},
-  {la:"Na H-Eileanan An Iar",simd:16.4,ohca:625.0,pop:26720,cpr:59.9,pad:20.4,rt:14.0,arrests:167},
-  {la:"Renfrewshire",simd:21.4,ohca:527.6,pop:179100,cpr:57.5,pad:6.3,rt:8.0,arrests:945},
-  {la:"Clackmannanshire",simd:25.6,ohca:518.0,pop:51540,cpr:67.8,pad:8.2,rt:12.25,arrests:267},
-  {la:"East Ayrshire",simd:28.9,ohca:480.3,pop:122010,cpr:66.4,pad:9.7,rt:8.0,arrests:586},
-  {la:"Argyll And Bute",simd:11.3,ohca:479.8,pop:85870,cpr:59.7,pad:9.5,rt:12.5,arrests:412},
-  {la:"South Lanarkshire",simd:20.8,ohca:471.4,pop:319020,cpr:64.3,pad:6.2,rt:9.0,arrests:1504},
-  {la:"Dumfries And Galloway",simd:13.8,ohca:466.9,pop:148860,cpr:64.6,pad:12.5,rt:10.5,arrests:695},
-  {la:"West Dunbartonshire",simd:38.5,ohca:463.3,pop:88930,cpr:65.4,pad:14.3,rt:9.0,arrests:412},
-  {la:"Dundee City",simd:32.4,ohca:451.4,pop:149320,cpr:59.2,pad:7.3,rt:7.0,arrests:674},
-  {la:"Fife",simd:19.1,ohca:442.5,pop:373550,cpr:62.5,pad:10.2,rt:10.0,arrests:1653},
-  {la:"South Ayrshire",simd:22.7,ohca:436.9,pop:112610,cpr:58.7,pad:7.1,rt:9.0,arrests:492},
-  {la:"North Lanarkshire",simd:27.6,ohca:433.9,pop:340180,cpr:64.0,pad:6.0,rt:9.0,arrests:1476},
-  {la:"Angus",simd:14.1,ohca:430.0,pop:115820,cpr:63.1,pad:9.6,rt:12.75,arrests:498},
-  {la:"Perth And Kinross",simd:8.3,ohca:425.8,pop:151950,cpr:56.1,pad:16.5,rt:12.0,arrests:647},
-  {la:"Shetland Islands",simd:2.1,ohca:405.0,pop:23210,cpr:55.3,pad:13.8,rt:16.75,arrests:94},
-  {la:"North Ayrshire",simd:31.5,ohca:397.1,pop:134740,cpr:60.9,pad:7.1,rt:9.25,arrests:535},
-  {la:"East Lothian",simd:10.4,ohca:391.3,pop:107090,cpr:65.1,pad:18.1,rt:9.0,arrests:419},
-  {la:"Scottish Borders",simd:8.9,ohca:390.4,pop:115510,cpr:64.1,pad:16.2,rt:12.0,arrests:451},
-  {la:"Moray",simd:8.7,ohca:386.1,pop:95820,cpr:60.5,pad:9.7,rt:11.0,arrests:370},
-  {la:"Midlothian",simd:12.5,ohca:382.9,pop:92460,cpr:61.3,pad:11.6,rt:9.0,arrests:354},
-  {la:"West Lothian",simd:16.3,ohca:377.7,pop:182140,cpr:66.7,pad:6.2,rt:9.0,arrests:688},
-  {la:"Glasgow City",simd:34.2,ohca:377.5,pop:633120,cpr:65.4,pad:8.2,rt:8.0,arrests:2390},
-  {la:"Aberdeen City",simd:18.2,ohca:373.1,pop:227560,cpr:74.4,pad:13.3,rt:7.0,arrests:849},
-  {la:"Highland",simd:9.6,ohca:362.6,pop:235540,cpr:62.6,pad:14.8,rt:10.0,arrests:854},
-  {la:"Aberdeenshire",simd:5.1,ohca:352.6,pop:261210,cpr:61.2,pad:17.9,rt:14.5,arrests:921},
-  {la:"Falkirk",simd:20.3,ohca:347.4,pop:160340,cpr:64.5,pad:6.6,rt:8.0,arrests:557},
-  {la:"Orkney Islands",simd:3.2,ohca:341.3,pop:22270,cpr:47.4,pad:9.2,rt:10.5,arrests:76},
-  {la:"Stirling",simd:12.1,ohca:302.5,pop:94210,cpr:63.2,pad:12.6,rt:9.0,arrests:285},
-  {la:"City Of Edinburgh",simd:14.7,ohca:298.7,pop:524930,cpr:64.5,pad:13.1,rt:8.0,arrests:1568},
-  {la:"East Dunbartonshire",simd:3.8,ohca:278.9,pop:108640,cpr:73.6,pad:10.2,rt:10.0,arrests:303},
-  {la:"East Renfrewshire",simd:4.2,ohca:278.4,pop:95530,cpr:65.0,pad:8.6,rt:9.5,arrests:266}
+const DATA=[
+  {la:"Inverclyde",simd:37.8,ohca:631.1,pop:77800,cpr:66.4,pad:6.9,rt:9.0},
+  {la:"Na H-Eileanan An Iar",simd:16.4,ohca:625.0,pop:26720,cpr:59.9,pad:20.4,rt:14.0},
+  {la:"Renfrewshire",simd:21.4,ohca:527.6,pop:179100,cpr:57.5,pad:6.3,rt:8.0},
+  {la:"Clackmannanshire",simd:25.6,ohca:518.0,pop:51540,cpr:67.8,pad:8.2,rt:12.25},
+  {la:"East Ayrshire",simd:28.9,ohca:480.3,pop:122010,cpr:66.4,pad:9.7,rt:8.0},
+  {la:"Argyll And Bute",simd:11.3,ohca:479.8,pop:85870,cpr:59.7,pad:9.5,rt:12.5},
+  {la:"South Lanarkshire",simd:20.8,ohca:471.4,pop:319020,cpr:64.3,pad:6.2,rt:9.0},
+  {la:"Dumfries And Galloway",simd:13.8,ohca:466.9,pop:148860,cpr:64.6,pad:12.5,rt:10.5},
+  {la:"West Dunbartonshire",simd:38.5,ohca:463.3,pop:88930,cpr:65.4,pad:14.3,rt:9.0},
+  {la:"Dundee City",simd:32.4,ohca:451.4,pop:149320,cpr:59.2,pad:7.3,rt:7.0},
+  {la:"Fife",simd:19.1,ohca:442.5,pop:373550,cpr:62.5,pad:10.2,rt:10.0},
+  {la:"South Ayrshire",simd:22.7,ohca:436.9,pop:112610,cpr:58.7,pad:7.1,rt:9.0},
+  {la:"North Lanarkshire",simd:27.6,ohca:433.9,pop:340180,cpr:64.0,pad:6.0,rt:9.0},
+  {la:"Angus",simd:14.1,ohca:430.0,pop:115820,cpr:63.1,pad:9.6,rt:12.75},
+  {la:"Perth And Kinross",simd:8.3,ohca:425.8,pop:151950,cpr:56.1,pad:16.5,rt:12.0},
+  {la:"Shetland Islands",simd:2.1,ohca:405.0,pop:23210,cpr:55.3,pad:13.8,rt:16.75},
+  {la:"North Ayrshire",simd:31.5,ohca:397.1,pop:134740,cpr:60.9,pad:7.1,rt:9.25},
+  {la:"East Lothian",simd:10.4,ohca:391.3,pop:107090,cpr:65.1,pad:18.1,rt:9.0},
+  {la:"Scottish Borders",simd:8.9,ohca:390.4,pop:115510,cpr:64.1,pad:16.2,rt:12.0},
+  {la:"Moray",simd:8.7,ohca:386.1,pop:95820,cpr:60.5,pad:9.7,rt:11.0},
+  {la:"Midlothian",simd:12.5,ohca:382.9,pop:92460,cpr:61.3,pad:11.6,rt:9.0},
+  {la:"West Lothian",simd:16.3,ohca:377.7,pop:182140,cpr:66.7,pad:6.2,rt:9.0},
+  {la:"Glasgow City",simd:34.2,ohca:377.5,pop:633120,cpr:65.4,pad:8.2,rt:8.0},
+  {la:"Aberdeen City",simd:18.2,ohca:373.1,pop:227560,cpr:74.4,pad:13.3,rt:7.0},
+  {la:"Highland",simd:9.6,ohca:362.6,pop:235540,cpr:62.6,pad:14.8,rt:10.0},
+  {la:"Aberdeenshire",simd:5.1,ohca:352.6,pop:261210,cpr:61.2,pad:17.9,rt:14.5},
+  {la:"Falkirk",simd:20.3,ohca:347.4,pop:160340,cpr:64.5,pad:6.6,rt:8.0},
+  {la:"Orkney Islands",simd:3.2,ohca:341.3,pop:22270,cpr:47.4,pad:9.2,rt:10.5},
+  {la:"Stirling",simd:12.1,ohca:302.5,pop:94210,cpr:63.2,pad:12.6,rt:9.0},
+  {la:"City Of Edinburgh",simd:14.7,ohca:298.7,pop:524930,cpr:64.5,pad:13.1,rt:8.0},
+  {la:"East Dunbartonshire",simd:3.8,ohca:278.9,pop:108640,cpr:73.6,pad:10.2,rt:10.0},
+  {la:"East Renfrewshire",simd:4.2,ohca:278.4,pop:95530,cpr:65.0,pad:8.6,rt:9.5}
 ];
 
-let colorMode = 'cpr';
-let highlighted = '';
-const PAD = {l:70,r:20,t:24,b:54};
-let W, H, cW, cH;
-
-const SCALES = {
-  cpr: {min:47, max:76, ramps:[[214,234,248],[13,59,110]], label:'Bystander CPR rate', unit:'%'},
-  pad: {min:6,  max:21, ramps:[[212,237,218],[30,107,63]], label:'PAD use rate', unit:'%'},
-  rt:  {min:7,  max:17, ramps:[[232,218,240],[74,28,104]], label:'Median response time', unit:' min', invert:true}
+const SC={
+  cpr:{min:47,max:76,r:[[214,234,248],[13,59,110]],lbl:'Bystander CPR rate',u:'%'},
+  pad:{min:6,max:21,r:[[212,237,218],[30,107,63]],lbl:'PAD use rate',u:'%'},
+  rt:{min:7,max:17,r:[[232,218,240],[74,28,104]],lbl:'Response time',u:' min',inv:true}
 };
+let cm='cpr',hl='';
+const notable=['Glasgow City','Inverclyde','Dundee City','West Dunbartonshire','City Of Edinburgh','Dumfries And Galloway','Highland','Aberdeen City','North Lanarkshire','Clackmannanshire','North Ayrshire','East Ayrshire','Renfrewshire'];
 
-function lerp(a,b,t){return Math.round(a+(b-a)*t);}
-function getColor(d){
-  const sc=SCALES[colorMode];
-  const v=colorMode==='cpr'?d.cpr:colorMode==='pad'?d.pad:d.rt;
-  let t=(v-sc.min)/(sc.max-sc.min);
-  if(sc.invert) t=1-t;
-  t=Math.max(0,Math.min(1,t));
-  return `rgb(${lerp(sc.ramps[0][0],sc.ramps[1][0],t)},${lerp(sc.ramps[0][1],sc.ramps[1][1],t)},${lerp(sc.ramps[0][2],sc.ramps[1][2],t)})`;
+function lp(a,b,t){return Math.round(a+(b-a)*t);}
+function col(d){
+  const s=SC[cm]; const v=cm==='cpr'?d.cpr:cm==='pad'?d.pad:d.rt;
+  let t=(v-s.min)/(s.max-s.min); if(s.inv)t=1-t; t=Math.max(0,Math.min(1,t));
+  return `rgb(${lp(s.r[0][0],s.r[1][0],t)},${lp(s.r[0][1],s.r[1][1],t)},${lp(s.r[0][2],s.r[1][2],t)})`;
 }
 function isHR(d){return d.simd>20&&d.ohca>420;}
-function xPos(v){return PAD.l+(v/42)*cW;}
-function yPos(v){return PAD.t+cH-((v-250)/410)*cH;}
-function bR(pop){return Math.max(7,Math.min(30,Math.sqrt(pop/633120)*56));}
+function bR(p,W){return Math.max(6,Math.min(W/20,Math.sqrt(p/633120)*54));}
 
-function init(){
-  const wrap=document.getElementById('chartWrap');
-  W=wrap.clientWidth; H=460;
-  cW=W-PAD.l-PAD.r; cH=H-PAD.t-PAD.b;
-  ['bgCanvas','bubbleCanvas'].forEach(id=>{
-    const c=document.getElementById(id);
-    c.width=W; c.height=H;
-    c.style.width=W+'px'; c.style.height=H+'px';
-  });
-  drawBg(); drawBubbles(); drawLegend();
-}
+function draw(){
+  const card=document.getElementById('chartCard');
+  const W=card.clientWidth,H=card.clientHeight;
+  ['bgC','bubC'].forEach(id=>{const c=document.getElementById(id);c.width=W;c.height=H;c.style.width=W+'px';c.style.height=H+'px';});
+  const P={l:50,r:16,t:14,b:40};
+  const cW=W-P.l-P.r,cH=H-P.t-P.b;
+  const xp=v=>P.l+(v/42)*cW;
+  const yp=v=>P.t+cH-((v-250)/410)*cH;
 
-function drawBg(){
-  const ctx=document.getElementById('bgCanvas').getContext('2d');
-  ctx.clearRect(0,0,W,H);
-  const gc='rgba(26,26,46,0.06)', tc='rgba(26,26,46,0.38)', ac='rgba(26,26,46,0.18)';
-  ctx.font='11px "DM Sans",sans-serif';
-
+  // Background
+  const bg=document.getElementById('bgC').getContext('2d');
+  bg.clearRect(0,0,W,H);
+  const gc='rgba(26,26,46,0.06)',tc='rgba(26,26,46,0.36)',ac='rgba(26,26,46,0.16)';
+  bg.font='10px "DM Sans",sans-serif';
   [0,10,20,30,40].forEach(v=>{
-    const x=xPos(v);
-    ctx.strokeStyle=gc; ctx.lineWidth=0.5;
-    ctx.beginPath(); ctx.moveTo(x,PAD.t); ctx.lineTo(x,PAD.t+cH); ctx.stroke();
-    ctx.fillStyle=tc; ctx.textAlign='center';
-    ctx.fillText(v+'%',x,PAD.t+cH+18);
+    const x=xp(v); bg.strokeStyle=gc;bg.lineWidth=0.5;bg.beginPath();bg.moveTo(x,P.t);bg.lineTo(x,P.t+cH);bg.stroke();
+    bg.fillStyle=tc;bg.textAlign='center';bg.fillText(v+'%',x,P.t+cH+15);
   });
-
   [300,350,400,450,500,550,600,650].forEach(v=>{
-    const y=yPos(v);
-    if(y<PAD.t||y>PAD.t+cH) return;
-    ctx.strokeStyle=gc; ctx.lineWidth=0.5;
-    ctx.beginPath(); ctx.moveTo(PAD.l,y); ctx.lineTo(PAD.l+cW,y); ctx.stroke();
-    ctx.fillStyle=tc; ctx.textAlign='right';
-    ctx.fillText(v,PAD.l-8,y+4);
+    const y=yp(v);if(y<P.t||y>P.t+cH)return;
+    bg.strokeStyle=gc;bg.lineWidth=0.5;bg.beginPath();bg.moveTo(P.l,y);bg.lineTo(P.l+cW,y);bg.stroke();
+    bg.fillStyle=tc;bg.textAlign='right';bg.fillText(v,P.l-5,y+4);
   });
-
-  ctx.strokeStyle=ac; ctx.lineWidth=1;
-  ctx.beginPath(); ctx.moveTo(PAD.l,PAD.t); ctx.lineTo(PAD.l,PAD.t+cH); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(PAD.l,PAD.t+cH); ctx.lineTo(PAD.l+cW,PAD.t+cH); ctx.stroke();
-
-  // High-risk quadrant
-  const qx=xPos(20), qy=yPos(420);
-  ctx.fillStyle='rgba(192,57,43,0.04)';
-  ctx.strokeStyle='rgba(192,57,43,0.18)';
-  ctx.lineWidth=0.75;
-  ctx.setLineDash([4,3]);
-  ctx.beginPath(); ctx.rect(qx,PAD.t,PAD.l+cW-qx,qy-PAD.t); ctx.fill(); ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.font='10px "DM Sans",sans-serif';
-  ctx.fillStyle='rgba(192,57,43,0.55)';
-  ctx.textAlign='right';
-  ctx.fillText('High deprivation + high OHCA risk',PAD.l+cW-8,PAD.t+14);
-
+  bg.strokeStyle=ac;bg.lineWidth=1;
+  bg.beginPath();bg.moveTo(P.l,P.t);bg.lineTo(P.l,P.t+cH);bg.stroke();
+  bg.beginPath();bg.moveTo(P.l,P.t+cH);bg.lineTo(P.l+cW,P.t+cH);bg.stroke();
+  // Quadrant shading
+  const qx=xp(20),qy=yp(420);
+  bg.fillStyle='rgba(192,57,43,0.04)';bg.strokeStyle='rgba(192,57,43,0.15)';bg.lineWidth=0.75;
+  bg.setLineDash([4,3]);bg.beginPath();bg.rect(qx,P.t,P.l+cW-qx,qy-P.t);bg.fill();bg.stroke();bg.setLineDash([]);
+  bg.font='9px "DM Sans",sans-serif';bg.fillStyle='rgba(192,57,43,0.5)';bg.textAlign='right';
+  bg.fillText('High deprivation + high OHCA',P.l+cW-5,P.t+11);
   // Axis labels
-  ctx.fillStyle='rgba(26,26,46,0.45)';
-  ctx.font='11px "DM Sans",sans-serif';
-  ctx.textAlign='center';
-  ctx.fillText('Deprivation — % of population in most deprived 20% nationally (SIMD 2020)',PAD.l+cW/2,H-6);
-  ctx.save();
-  ctx.translate(14,PAD.t+cH/2);
-  ctx.rotate(-Math.PI/2);
-  ctx.fillText('OHCA rate per 100,000 population',0,0);
-  ctx.restore();
-}
+  bg.fillStyle='rgba(26,26,46,0.38)';bg.font='10px "DM Sans",sans-serif';bg.textAlign='center';
+  bg.fillText('Deprivation — % population in most deprived 20% (SIMD 2020)',P.l+cW/2,H-5);
+  bg.save();bg.translate(12,P.t+cH/2);bg.rotate(-Math.PI/2);bg.fillText('OHCA per 100,000 population',0,0);bg.restore();
 
-function drawBubbles(){
-  const ctx=document.getElementById('bubbleCanvas').getContext('2d');
-  ctx.clearRect(0,0,W,H);
-  const sorted=[...data].sort((a,b)=>b.pop-a.pop);
-  const notable=['Glasgow City','Inverclyde','Dundee City','West Dunbartonshire','City Of Edinburgh','Dumfries And Galloway','Highland','Aberdeen City','North Lanarkshire','East Dunbartonshire','Clackmannanshire','North Ayrshire','East Ayrshire','Renfrewshire'];
-
-  sorted.forEach(d=>{
-    const x=xPos(d.simd), y=yPos(d.ohca), r=bR(d.pop);
-    const col=getColor(d);
-    const isHL=highlighted&&d.la===highlighted;
-    const faded=highlighted&&!isHL;
-    ctx.globalAlpha=faded?0.15:0.88;
-    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
-    ctx.fillStyle=col; ctx.fill();
-
-    ctx.globalAlpha=faded?0.1:1;
-    if(isHL){
-      ctx.strokeStyle='#c0392b'; ctx.lineWidth=2.5;
-    } else if(!highlighted&&isHR(d)){
-      ctx.strokeStyle='rgba(192,57,43,0.55)'; ctx.lineWidth=1.5;
-    } else {
-      ctx.strokeStyle='rgba(26,26,46,0.12)'; ctx.lineWidth=0.75;
-    }
-    ctx.stroke();
-    ctx.globalAlpha=1;
-
+  // Bubbles
+  const bub=document.getElementById('bubC').getContext('2d');
+  bub.clearRect(0,0,W,H);
+  [...DATA].sort((a,b)=>b.pop-a.pop).forEach(d=>{
+    const x=xp(d.simd),y=yp(d.ohca),r=bR(d.pop,W);
+    const c=col(d);const isHL=hl&&d.la===hl;const faded=hl&&!isHL;
+    bub.globalAlpha=faded?0.1:0.88;
+    bub.beginPath();bub.arc(x,y,r,0,Math.PI*2);bub.fillStyle=c;bub.fill();
+    bub.globalAlpha=faded?0.07:1;
+    if(isHL){bub.strokeStyle='#c0392b';bub.lineWidth=2.5;}
+    else if(!hl&&isHR(d)){bub.strokeStyle='rgba(192,57,43,0.55)';bub.lineWidth=1.5;}
+    else{bub.strokeStyle='rgba(26,26,46,0.12)';bub.lineWidth=0.75;}
+    bub.stroke();bub.globalAlpha=1;
     if(!faded&&(notable.includes(d.la)||isHL)){
-      const sn=d.la.replace('City Of ','').replace(' And ',' & ').replace(' Islands','').replace(' Ayrshire',' Ayr.');
-      ctx.font=`${r>16?10:9}px "DM Sans",sans-serif`;
-      if(r>=14){
-        ctx.fillStyle='rgba(26,26,46,0.75)'; ctx.textAlign='center'; ctx.textBaseline='middle';
-        const words=sn.split(' ');
-        if(words.length>2){
-          ctx.fillText(words.slice(0,2).join(' '),x,y-5);
-          ctx.fillText(words.slice(2).join(' '),x,y+6);
-        } else {
-          ctx.fillText(sn,x,y);
-        }
-      } else {
-        ctx.fillStyle='rgba(26,26,46,0.6)'; ctx.textAlign='center'; ctx.textBaseline='bottom';
-        ctx.fillText(sn,x,y-r-3);
-      }
+      const sn=d.la.replace('City Of ','').replace(' And ',' & ').replace(' Dunbartonshire',' Dunb.').replace(' Lanarkshire',' Lnk.');
+      bub.font=`${r>14?9:8}px "DM Sans",sans-serif`;bub.textAlign='center';bub.textBaseline='middle';
+      if(r>=13){
+        bub.fillStyle='rgba(26,26,46,0.75)';
+        const w=sn.split(' ');
+        if(w.length>2){bub.fillText(w.slice(0,2).join(' '),x,y-4);bub.fillText(w.slice(2).join(' '),x,y+5);}
+        else bub.fillText(sn,x,y);
+      }else{bub.fillStyle='rgba(26,26,46,0.6)';bub.textBaseline='bottom';bub.fillText(sn,x,y-r-2);}
     }
   });
-  ctx.globalAlpha=1;
+  bub.globalAlpha=1;
+  buildLegend();
 }
 
-function drawLegend(){
-  const sc=SCALES[colorMode];
-  const stops=5;
-  const swatches=Array.from({length:stops},(_,i)=>{
-    const t=i/(stops-1);
-    const v=sc.min+(sc.max-sc.min)*t;
-    const ti=sc.invert?1-t:t;
-    const col=`rgb(${lerp(sc.ramps[0][0],sc.ramps[1][0],ti)},${lerp(sc.ramps[0][1],sc.ramps[1][1],ti)},${lerp(sc.ramps[0][2],sc.ramps[1][2],ti)})`;
-    return `<span class="leg-swatch"><span class="leg-dot" style="background:${col};border:0.5px solid rgba(26,26,46,0.15)"></span>${Math.round(v)}${sc.unit}</span>`;
+function buildLegend(){
+  const s=SC[cm];
+  const sw=Array.from({length:5},(_,i)=>{
+    const t=i/4;const ti=s.inv?1-t:t;const v=s.min+(s.max-s.min)*t;
+    const c=`rgb(${lp(s.r[0][0],s.r[1][0],ti)},${lp(s.r[0][1],s.r[1][1],ti)},${lp(s.r[0][2],s.r[1][2],ti)})`;
+    return `<span class="leg"><span class="leg-dot" style="background:${c};border:0.5px solid rgba(26,26,46,.15)"></span>${Math.round(v)}${s.u}</span>`;
   });
-  const sizes=[{l:'Small',p:60000},{l:'Medium',p:200000},{l:'Large',p:633000}].map(s=>{
-    const r=bR(s.p);
-    return `<span class="size-eg"><svg width="${r*2+2}" height="${r*2+2}" style="overflow:visible;flex-shrink:0"><circle cx="${r+1}" cy="${r+1}" r="${r}" fill="rgba(26,26,46,0.1)" stroke="rgba(26,26,46,0.25)" stroke-width="0.75"/></svg><span>${s.l}</span></span>`;
-  });
-  document.getElementById('legendArea').innerHTML=
-    `<span class="legend-label">${sc.label}:</span><div class="leg-items">${swatches.join('')}</div><div class="legend-sep"></div><div class="size-legend">${sizes.join('')}</div>`;
+  document.getElementById('leg').innerHTML=`<span style="font-size:10px;font-weight:500;color:#7a7a9a;margin-right:3px">${s.lbl}:</span>${sw.join('')}<span class="note">Source: SAS / SIMD 2020 · bubble = population</span>`;
 }
 
 function setColor(m){
-  colorMode=m;
-  ['cpr','pad','rt'].forEach(id=>{
-    const p=document.getElementById('pill-'+id);
-    p.className='pill'+(id===m?' active-'+m:'');
-  });
-  drawBubbles(); drawLegend();
+  cm=m;['cpr','pad','rt'].forEach(id=>{document.getElementById('p-'+id).className='pill'+(id===m?' ac-'+m:'');});draw();
 }
+function setHL(v){hl=v;draw();}
 
-function setHighlight(v){ highlighted=v; drawBubbles(); }
-
-// Tooltip
-document.getElementById('bubbleCanvas').addEventListener('mousemove',function(e){
+document.getElementById('bubC').addEventListener('mousemove',function(e){
   const rect=this.getBoundingClientRect();
-  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
-  const tt=document.getElementById('tooltip');
-  let hit=null;
-  for(const d of data){ const x=xPos(d.simd),y=yPos(d.ohca),r=bR(d.pop); if(Math.hypot(mx-x,my-y)<=r+4){hit=d;break;} }
+  const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  const W=this.width,H=this.height;
+  const P={l:50,r:16,t:14,b:40};const cW=W-P.l-P.r,cH=H-P.t-P.b;
+  const xp=v=>P.l+(v/42)*cW;const yp=v=>P.t+cH-((v-250)/410)*cH;
+  const tt=document.getElementById('tt');let hit=null;
+  for(const d of DATA){const x=xp(d.simd),y=yp(d.ohca),r=bR(d.pop,W);if(Math.hypot(mx-x,my-y)<=r+4){hit=d;break;}}
   if(hit){
     tt.innerHTML=`<div class="tt-name">${hit.la}</div>
       <div class="tt-row"><span>OHCA per 100k</span><span class="tt-val">${hit.ohca.toFixed(0)}</span></div>
-      <div class="tt-row"><span>Deprivation (SIMD)</span><span class="tt-val">${hit.simd}%</span></div>
+      <div class="tt-row"><span>Deprivation</span><span class="tt-val">${hit.simd}%</span></div>
       <div class="tt-row"><span>Population</span><span class="tt-val">${hit.pop.toLocaleString()}</span></div>
       <div class="tt-row"><span>Bystander CPR</span><span class="tt-val">${hit.cpr.toFixed(1)}%</span></div>
-      <div class="tt-row"><span>PAD use rate</span><span class="tt-val">${hit.pad.toFixed(1)}%</span></div>
-      <div class="tt-row"><span>Median response</span><span class="tt-val">${hit.rt.toFixed(1)} min</span></div>
-      <div class="tt-row"><span>Total OHCA (dataset)</span><span class="tt-val">${hit.arrests.toLocaleString()}</span></div>
-      ${isHR(hit)?'<div class="tt-alert">⚠ High risk + high deprivation</div>':''}`;
-    const tipX=Math.min(mx+16,W-230);
-    const tipY=Math.max(my-10,0);
-    tt.style.left=tipX+'px'; tt.style.top=tipY+'px'; tt.style.display='block';
-    this.style.cursor='crosshair';
-  } else { tt.style.display='none'; this.style.cursor='default'; }
+      <div class="tt-row"><span>PAD use</span><span class="tt-val">${hit.pad.toFixed(1)}%</span></div>
+      <div class="tt-row"><span>Response time</span><span class="tt-val">${hit.rt} min</span></div>
+      ${isHR(hit)?'<div class="tt-warn">⚠ High risk + high deprivation</div>':''}`;
+    tt.style.left=(mx>W*0.6?mx-185:mx+14)+'px';
+    tt.style.top=Math.max(0,my-10)+'px';tt.style.display='block';this.style.cursor='crosshair';
+  }else{tt.style.display='none';this.style.cursor='default';}
 });
-document.getElementById('bubbleCanvas').addEventListener('mouseleave',()=>{ document.getElementById('tooltip').style.display='none'; });
-
-window.addEventListener('load', init);
-window.addEventListener('resize', init);
+document.getElementById('bubC').addEventListener('mouseleave',()=>document.getElementById('tt').style.display='none');
+window.addEventListener('load',draw);
+window.addEventListener('resize',draw);
 </script>
 </body>
 </html>
